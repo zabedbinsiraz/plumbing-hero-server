@@ -1,3 +1,4 @@
+
 const express = require('express')
 const cors = require('cors')
 const MongoClient = require('mongodb').MongoClient;
@@ -70,7 +71,7 @@ client.connect(err => {
 
   const orderCollection = client.db("Plumbing-Hero").collection("orders");
 
-  app.get('/allOrders',(req,res) => {
+  app.get('/allBookings',(req,res) => {
     orderCollection.find({buyerEmail: req.query.email})
     .toArray((err,orders) => {
       //  console.log(orders)
@@ -119,11 +120,35 @@ client.connect(err => {
   }) 
 });
 
+client.connect(err => {
+
+  const adminCollection = client.db("Plumbing-Hero").collection("admins");
+
+  app.get('/allAdmin',(req,res) => {
+    adminCollection.find({buyerEmail: req.query.email})
+    .toArray((err,admin) => {
+      //  console.log(orders)
+       res.send(admin)
+    })
+  })
+
+  app.post('/addAdmin',(req,res)=>{
+    const newAdmin = req.body;
+    
+    adminCollection.insertOne(newAdmin)
+    .then(result => {
+      console.log('inserted one', result.insertedCount)
+      res.send(result.insertedCount > 0)
+    })
+  }) 
+});
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
 app.listen(port)
+
 
 
 
